@@ -16,8 +16,8 @@ spark = SparkSession.builder \
     .appName('CodeDay Demo') \
     .getOrCreate()
 
-# * Define CSV Schema
-schema = StructType([
+# * Define Data Schemas
+taxi_schema = StructType([
     StructField('VendorID', IntegerType(), True),
     StructField('tpep_pickup_datetime', DateType(), True),
     StructField('tpep_dropoff_datetime', DateType(), True),
@@ -38,25 +38,54 @@ schema = StructType([
     StructField('congestion_surcharge', DoubleType(), True)
 ])
 
+zone_schema = StructType([
+    StructField('LocationID', IntegerType(), True),
+    StructField('Borough', StringType(), True),
+    StructField('Zone', StringType(), True),
+    StructField('service_zone', StringType(), True),
+])
+
 # * Create Spark SQL DataFrame
-rawDF = spark.read.csv(
+taxiDF = spark.read.csv(
     path='resources/data/yellow_tripdata_2020-*.csv.gz',
-    schema=schema,
+    schema=taxi_schema,
     sep=',',
     header=True,
 )
 
+zoneDF = spark.read.csv(
+    path='resources/lookup_data/taxi+_zone_lookup.csv',
+    schema=zone_schema,
+    sep=",",
+    header=True,
+)
+
 # * Create In-Memory View
-rawDF.createOrReplaceTempView("TAXI")
+taxiDF.createOrReplaceTempView("TAXI")
+zoneDF.createOrReplaceTempView("ZONE")
 
 # * Custom Spark SQL
 queryDF = spark.sql("""
     SELECT
-        CASE WHEN VendorID = 1 THEN 'Vendor_1' ELSE 'Vendor_2' END AS vendor_name,
-        CAST(SUM(total_amount) AS decimal(18,2)) as total_revenue 
+        CASE 
+            WHEN TAXI.VendorID = 1 THEN 'Creative Mobile Technologies'
+            WHEN TAXI.VendorID = 2 THEN 'VeriFone Inc.'
+        ELSE 'Other' END AS vendor_name,
+        ZONE.Borough as pickup_location,
+        CAST(SUM(TAXI.total_amount) AS decimal(18,2)) as total_revenue
+
     FROM TAXI
+    INNER JOIN ZONE ON ZONE.LocationID = TAXI.PULocationID
     WHERE total_amount > 0
-    GROUP BY CASE WHEN VendorID = 1 THEN 'Vendor_1' ELSE 'Vendor_2' END
+    GROUP BY (CASE 
+            WHEN TAXI.VendorID = 1 THEN 'Creative Mobile Technologies'
+            WHEN TAXI.VendorID = 2 THEN 'VeriFone Inc.'
+        ELSE 'Other' END), ZONE.Borough
+        
+    ORDER BY (CASE 
+            WHEN TAXI.VendorID = 1 THEN 'Creative Mobile Technologies'
+            WHEN TAXI.VendorID = 2 THEN 'VeriFone Inc.'
+        ELSE 'Other' END), ZONE.Borough
 """)
 
 queryDF.show()
