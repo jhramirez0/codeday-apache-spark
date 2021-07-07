@@ -88,4 +88,5 @@ queryDF = spark.sql("""
         ELSE 'Other' END), ZONE.Borough
 """)
 
+# * Display Results
 queryDF.show()

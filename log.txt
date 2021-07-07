@@ -1,0 +1,26 @@
++--------------------+---------------+-------------+
+|         vendor_name|pickup_location|total_revenue|
++--------------------+---------------+-------------+
+|Creative Mobile T...|          Bronx|    505147.36|
+|Creative Mobile T...|       Brooklyn|   1685656.91|
+|Creative Mobile T...|            EWR|     62279.03|
+|Creative Mobile T...|      Manhattan| 121826557.37|
+|Creative Mobile T...|         Queens|  16516931.92|
+|Creative Mobile T...|  Staten Island|      6144.71|
+|Creative Mobile T...|        Unknown|   1289577.57|
+|               Other|          Bronx|   3444759.73|
+|               Other|       Brooklyn|   6442754.83|
+|               Other|            EWR|       526.17|
+|               Other|      Manhattan|  11037002.89|
+|               Other|         Queens|   4433205.50|
+|               Other|  Staten Island|    115495.88|
+|               Other|        Unknown|   1439602.57|
+|       VeriFone Inc.|          Bronx|    724836.67|
+|       VeriFone Inc.|       Brooklyn|   2678698.87|
+|       VeriFone Inc.|            EWR|    132352.64|
+|       VeriFone Inc.|      Manhattan| 239438876.00|
+|       VeriFone Inc.|         Queens|  40470838.09|
+|       VeriFone Inc.|  Staten Island|    155506.11|
++--------------------+---------------+-------------+
+only showing top 20 rows
+
